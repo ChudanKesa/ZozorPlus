@@ -8,42 +8,24 @@
 
 import Foundation
 
-enum Operand {
-    case plus
-    case minus
-    
-    var stringValue: String {
-        switch self {
-        case .plus:
-            return "+"
-        case .minus:
-            return "-"
-        }
-    }
-}
-
-final class MainSource {
-    
-    let operands: [Operand]
-    
-    init() {
-        operands = [
-            .plus,
-            .minus
-        ]
-    }
-}
-
 final class MainViewModel {
     
     // MARK: - Private properties
     
-    let operands: [Operand]
+    private let operators: [Operator]
     
+    private let operands: [Operands]
+    
+    private var _displayedText = "0" {
+        didSet {
+            displayedText?(_displayedText)
+        }
+    }
     
     // MARK: - Initializer
     
     init(source: MainSource) {
+        self.operators = source.operators
         self.operands = source.operands
     }
     
@@ -85,7 +67,7 @@ final class MainViewModel {
     }
     
     private func initTexts() {
-        displayedText?("")
+        displayedText?(_displayedText)
         plusText?("+")
         minusText?("-")
         equalsText?("=")
@@ -101,8 +83,14 @@ final class MainViewModel {
         zeroText?("0")
     }
     
-    func didPressNumber(at index: Int) {
+    func didPressOperator(at index: Int) {
+        guard index < operators.count else {
+            fatalError()
+        }
         
+        if _displayedText.last! != "+" && _displayedText.last! != "-" && _displayedText != "0" {
+            updateDisplayedText(with: operators[index].rawValue)
+        }
     }
     
     func didPressOperand(at index: Int) {
@@ -110,8 +98,21 @@ final class MainViewModel {
             fatalError()
         }
         
-        displayedText?(operands[index].stringValue)
+        updateDisplayedText(with: operands[index].rawValue)
     }
+    
+    func updateDisplayedText(with value: String) {
+        if _displayedText == "0" {
+            _displayedText = value
+        } else {
+            _displayedText += value
+        }
+    }
+    
+    func clear() {
+        _displayedText = "0"
+    }
+    
 }
 
 

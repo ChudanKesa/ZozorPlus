@@ -17,7 +17,8 @@ class ViewController: UIViewController {
         if let stringNumber = stringNumbers.last {
             if stringNumber.isEmpty {
                 if stringNumbers.count == 1 {
-                    let alertVC = UIAlertController(title: "Zéro!", message: "Démarrez un nouveau calcul !", preferredStyle: .alert)
+                    let alertVC = UIAlertController(title: "Zéro!", message: "Démarrez un nouveau calcul !", 
+                                                    preferredStyle: .alert)
                     alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                     self.present(alertVC, animated: true, completion: nil)
                 } else {

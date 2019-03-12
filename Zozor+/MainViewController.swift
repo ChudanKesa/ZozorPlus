@@ -22,38 +22,6 @@ class MainViewController: UIViewController {
         return viewModel
     }()
     
-    var stringNumbers: [String] = [String()]
-    var operators: [String] = ["+"]
-    var index = 0
-    var isExpressionCorrect: Bool {
-        if let stringNumber = stringNumbers.last {
-            if stringNumber.isEmpty {
-                if stringNumbers.count == 1 {
-                    let alertVC = UIAlertController(title: "Zéro!", message: "Démarrez un nouveau calcul !", preferredStyle: .alert)
-                    alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                    self.present(alertVC, animated: true, completion: nil)
-                } else {
-                    let alertVC = UIAlertController(title: "Zéro!", message: "Entrez une expression correcte !", preferredStyle: .alert)
-                    alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                    self.present(alertVC, animated: true, completion: nil)
-                }
-                return false
-            }
-        }
-        return true
-    }
-    
-    var canAddOperator: Bool {
-        if let stringNumber = stringNumbers.last {
-            if stringNumber.isEmpty {
-                let alertVC = UIAlertController(title: "Zéro!", message: "Expression incorrecte !", preferredStyle: .alert)
-                alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                self.present(alertVC, animated: true, completion: nil)
-                return false
-            }
-        }
-        return true
-    }
     
     // MARK: - View life cycle
     
@@ -69,6 +37,18 @@ class MainViewController: UIViewController {
         viewModel.displayedText = { [weak self] text in
             self?.textView.text = text
         }
+    }
+    
+    @IBAction func pressOperand(_ sender: UIButton) {
+        viewModel.didPressOperand(at: sender.tag)
+    }
+    
+    @IBAction func pressOperator(_ sender: UIButton) {
+        viewModel.didPressOperator(at: sender.tag)
+    }
+    
+    @IBAction func pressClear(_ sender: UIButton) {
+        viewModel.clear()
     }
     
     
