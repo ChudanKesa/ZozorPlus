@@ -8,6 +8,12 @@
 
 import Foundation
 
+struct AlertConfiguration {
+    let title: String
+    let message: String
+    let actionTitle: String
+}
+
 final class MainViewModel {
     
     // MARK: - Private properties
@@ -16,10 +22,34 @@ final class MainViewModel {
     
     private let operands: [Operands]
     
-    private var _displayedText = "0" {
+    private var _displayedText = Operands.zero.rawValue {
         didSet {
             displayedText?(_displayedText)
         }
+    }
+    
+    private var stringNumbers: [String] = [String()]
+    private var isExpressionCorrect: Bool {
+        if let stringNumber = stringNumbers.last {
+            if stringNumber.isEmpty {
+                if stringNumbers.count == 1 {
+                    presentAlert(for: .newCalcul)
+                } else {
+                    presentAlert(for: .enterCorrectExpression)
+                }
+            }
+        }
+        return true
+    }
+    
+    private var carAddOperator: Bool {
+        if let stringNumber = stringNumbers.last {
+            if stringNumber.isEmpty {
+                presentAlert(for: .incorrectExpression)
+                return false
+            }
+        }
+        return true
     }
     
     // MARK: - Initializer
@@ -29,35 +59,16 @@ final class MainViewModel {
         self.operands = source.operands
     }
     
+    // MARK: - Properties
+    
+    enum NextScreen {
+        case alert(alertConfiguration: AlertConfiguration)
+    }
+    
     // MARK: - Outputs
     
     var displayedText: ((String) -> Void)?
-    
-    var plusText: ((String) -> Void)?
-    
-    var minusText: ((String) -> Void)?
-    
-    var equalsText: ((String) -> Void)?
-    
-    var oneText: ((String) -> Void)?
-    
-    var twoText: ((String) -> Void)?
-    
-    var threeText: ((String) -> Void)?
-    
-    var fourText: ((String) -> Void)?
-    
-    var fiveText: ((String) -> Void)?
-    
-    var sixText: ((String) -> Void)?
-    
-    var sevenText: ((String) -> Void)?
-    
-    var eightText: ((String) -> Void)?
-    
-    var nineText: ((String) -> Void)?
-    
-    var zeroText: ((String) -> Void)?
+    var navigateToScreen: ((NextScreen) -> Void)?
     
     
     // MARK: - Inputs
@@ -68,19 +79,6 @@ final class MainViewModel {
     
     private func initTexts() {
         displayedText?(_displayedText)
-        plusText?("+")
-        minusText?("-")
-        equalsText?("=")
-        oneText?("1")
-        twoText?("2")
-        threeText?("3")
-        fourText?("4")
-        fiveText?("5")
-        sixText?("6")
-        sevenText?("7")
-        eightText?("8")
-        nineText?("9")
-        zeroText?("0")
     }
     
     func didPressOperator(at index: Int) {
@@ -110,9 +108,36 @@ final class MainViewModel {
     }
     
     func clear() {
-        _displayedText = "0"
+        _displayedText = Operands.zero.rawValue
     }
     
+    // MARK: - Helper
+    
+    private func presentAlert(for alertType: AlertType) {
+        let configuration = AlertConfiguration(alertType: alertType)
+        navigateToScreen?(.alert(alertConfiguration: configuration))
+    }
 }
 
+
+fileprivate enum AlertType {
+    case newCalcul
+    case enterCorrectExpression
+    case incorrectExpression
+}
+
+fileprivate extension AlertConfiguration {
+    init(alertType: AlertType) {
+        self.title = "Zéro!"
+        self.actionTitle = "OK"
+        switch alertType {
+        case .enterCorrectExpression:
+            self.message = "Entrez une expression correcte !"
+        case .incorrectExpression:
+            self.message = "Expression incorrecte !"
+        case .newCalcul:
+            self.message = "Démarrez un nouveau calcul !"
+        }
+    }
+}
 

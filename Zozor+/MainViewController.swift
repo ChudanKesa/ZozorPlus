@@ -37,6 +37,13 @@ class MainViewController: UIViewController {
         viewModel.displayedText = { [weak self] text in
             self?.textView.text = text
         }
+        
+        viewModel.navigateToScreen = { [weak self] screen in
+            switch screen {
+            case .alert(alertConfiguration: let configuration):
+                self?.presentAlert(with: configuration)
+            }
+        }
     }
     
     @IBAction func pressOperand(_ sender: UIButton) {
@@ -49,6 +56,19 @@ class MainViewController: UIViewController {
     
     @IBAction func pressClear(_ sender: UIButton) {
         viewModel.clear()
+    }
+    
+    // MARK: - Alert
+    
+    private func presentAlert(with configuration: AlertConfiguration) {
+        let alertViewController = UIAlertController(title: configuration.title,
+                                                    message: configuration.message,
+                                                    preferredStyle: .alert)
+        let action = UIAlertAction(title: configuration.actionTitle,
+                                   style: .cancel,
+                                   handler: nil)
+        alertViewController.addAction(action)
+        self.present(alertViewController, animated: true, completion: nil)
     }
     
     
