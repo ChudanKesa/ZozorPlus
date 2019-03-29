@@ -51,6 +51,7 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func pressOperator(_ sender: UIButton) {
+        
         viewModel.didPressOperator(at: sender.tag)
     }
     

@@ -28,7 +28,9 @@ final class MainViewModel {
         }
     }
     
+    private var wasTotalCalculated = false
     private var stringNumbers: [String] = [String()]
+    private var operatorsUsedDuringCalcul: [String] = ["+"]
     private var isExpressionCorrect: Bool {
         if let stringNumber = stringNumbers.last {
             if stringNumber.isEmpty {
@@ -37,12 +39,13 @@ final class MainViewModel {
                 } else {
                     presentAlert(for: .enterCorrectExpression)
                 }
+                return false
             }
         }
         return true
     }
     
-    private var carAddOperator: Bool {
+    private var canAddOperator: Bool {
         if let stringNumber = stringNumbers.last {
             if stringNumber.isEmpty {
                 presentAlert(for: .incorrectExpression)
@@ -83,20 +86,54 @@ final class MainViewModel {
     
     func didPressOperator(at index: Int) {
         guard index < operators.count else {
-            fatalError()
+            return
         }
         
-        if _displayedText.last! != "+" && _displayedText.last! != "-" && _displayedText != "0" {
-            updateDisplayedText(with: operators[index].rawValue)
+        if !canAddOperator {
+            return
         }
+        
+        if index == 2 {
+            calculateTotal()
+            return
+        }
+        
+        if wasTotalCalculated {
+            if let result = stringNumbers.last {
+                _displayedText = result
+            }
+        }
+        
+        wasTotalCalculated = false
+        
+        let currentOpperator = operators[index].rawValue
+        
+        updateDisplayedText(with: currentOpperator)
+        stringNumbers.append("")
+        operatorsUsedDuringCalcul.append(currentOpperator)
     }
     
     func didPressOperand(at index: Int) {
         guard index < operands.count else {
-            fatalError()
+            return
         }
         
+        if wasTotalCalculated {
+            clear()
+        }
+        
+        wasTotalCalculated = false
+        addNewNumberToStringNumber(newNumber: operands[index].rawValue)
         updateDisplayedText(with: operands[index].rawValue)
+        
+    }
+    
+    private func addNewNumberToStringNumber(newNumber : String) {
+        if let stringNumber = stringNumbers.last {
+            var stringNumberMutable = stringNumber
+            stringNumberMutable += "\(newNumber)"
+            stringNumbers[stringNumbers.count-1] = stringNumberMutable
+        }
     }
     
     func updateDisplayedText(with value: String) {
@@ -109,6 +146,7 @@ final class MainViewModel {
     
     func clear() {
         _displayedText = Operands.zero.rawValue
+        clearTheReccordedOpperandsAndOpperators()
     }
     
     // MARK: - Helper
@@ -116,6 +154,33 @@ final class MainViewModel {
     private func presentAlert(for alertType: AlertType) {
         let configuration = AlertConfiguration(alertType: alertType)
         navigateToScreen?(.alert(alertConfiguration: configuration))
+    }
+    
+    private func calculateTotal() {
+        if !isExpressionCorrect {
+            return
+        }
+        
+        var total = 0
+        for (i, stringNumber) in stringNumbers.enumerated() {
+            if let number = Int(stringNumber) {
+                if operatorsUsedDuringCalcul[i] == "+" {
+                    total += number
+                } else if operatorsUsedDuringCalcul[i] == "-" {
+                    total -= number
+                }
+            }
+        }
+        
+        _displayedText = _displayedText + "=\n\(total)"
+        operatorsUsedDuringCalcul = ["+"]
+        stringNumbers = [String(total)]
+        wasTotalCalculated = true
+    }
+    
+    private func clearTheReccordedOpperandsAndOpperators() {
+        operatorsUsedDuringCalcul = ["+"]
+        stringNumbers = [String()]
     }
 }
 

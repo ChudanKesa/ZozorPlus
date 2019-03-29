@@ -66,6 +66,70 @@ final class MainViewModelTests: XCTestCase {
         waitForExpectations(timeout: 1.0, handler: nil)
     }
     
+    func testGivenAMainViewModel_WhenDidPressOperatorWithAGoodIndexAndIncorrectDisplayedText_ThenDisplayedTextIsNotUpdated() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Returned text")
+        expectation.isInverted = true
+        
+        var counter = 0
+        viewModel.displayedText = { text in
+            if counter == 1 {
+                XCTFail()
+                expectation.fulfill()
+            }
+            counter += 1
+        }
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperator(at: 0)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+    
+    
+    func testGivenAMainViewModel_WhenDidPressOperandWithABadIndex_ThenDisplayedTextIsNotUpdated() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Returned text")
+        expectation.isInverted = true
+        
+        var counter = 0
+        viewModel.displayedText = { text in
+            if counter == 1 {
+                XCTFail()
+                expectation.fulfill()
+            }
+            counter += 1
+        }
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperand(at: 1000)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+    
+    func testGivenAMainViewModel_WhenDidPressOperatorWithABadIndex_ThenDisplayedTextIsNotUpdated() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Returned text")
+        expectation.isInverted = true
+        
+        var counter = 0
+        viewModel.displayedText = { text in
+            if counter == 1 {
+                XCTFail()
+                expectation.fulfill()
+            }
+            counter += 1
+        }
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperator(at: 1000)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+    
     func testGivenAMainViewModel_WhenClean_ThenDisplayedTextIsCorrectlyReturned() {
         let source = MainSource()
         let viewModel = MainViewModel(source: source)
@@ -73,7 +137,7 @@ final class MainViewModelTests: XCTestCase {
         
         var counter = 0
         viewModel.displayedText = { text in
-            if counter == 1 {
+            if counter == 5 {
                 XCTAssertEqual(text, "0")
                 expectation.fulfill()
             }
@@ -81,6 +145,10 @@ final class MainViewModelTests: XCTestCase {
         }
         
         viewModel.viewDidLoad()
+        viewModel.didPressOperand(at: 1)
+        viewModel.didPressOperator(at: 0)
+        viewModel.didPressOperand(at: 1)
+        viewModel.didPressOperator(at: 0)
         viewModel.clear()
         
         waitForExpectations(timeout: 1.0, handler: nil)

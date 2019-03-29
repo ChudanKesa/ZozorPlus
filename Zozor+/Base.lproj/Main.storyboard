@@ -184,7 +184,7 @@
                                             <action selector="pressOperator:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Weq-p4-FHz"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D9e-qZ-ZAT">
+                                    <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D9e-qZ-ZAT">
                                         <rect key="frame" x="90" y="0.0" width="30" height="63"/>
                                         <color key="backgroundColor" red="0.94643473756906082" green="0.64318747398780474" blue="0.12665354139525944" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="42"/>
