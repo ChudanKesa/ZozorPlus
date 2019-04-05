@@ -12,4 +12,6 @@ enum Operator: String {
     case plus = "+"
     case minus = "-"
     case equal = "="
+    case times = "x"
+    case divided = "/"
 }

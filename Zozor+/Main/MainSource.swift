@@ -17,7 +17,9 @@ final class MainSource {
         operators = [
             .plus,
             .minus,
-            .equal
+            .equal,
+            .times,
+            .divided
         ]
         
         operands = [

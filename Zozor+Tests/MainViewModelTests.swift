@@ -154,4 +154,52 @@ final class MainViewModelTests: XCTestCase {
         waitForExpectations(timeout: 1.0, handler: nil)
     }
     
+    func testGivenAMainViewModel_WhenDidPressEqualAfterAnotherOperation_ThenNewTotalIsCorrectlyCalculated() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Returned text")
+        
+        var counter = 0
+        viewModel.displayedText = { text in
+            if counter == 5 {
+                XCTAssertEqual(text, "15")
+                expectation.fulfill()
+            }
+            counter += 1
+        }
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperand(at: 5)
+        viewModel.didPressOperator(at: 0)
+        viewModel.didPressOperand(at: 5)
+        viewModel.didPressOperator(at: 2)
+        viewModel.didPressOperator(at: 2)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+    
+    func testGivenAMainViewModel_WhenDidPressOperatorAfterAnotherOperation_ThenDisplayedTextIsCorrectlyReturned() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Returned text")
+        
+        var counter = 0
+        viewModel.displayedText = { text in
+            if counter == 6 {
+                XCTAssertEqual(text, "5+")
+                expectation.fulfill()
+            }
+            counter += 1
+        }
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperand(at: 7)
+        viewModel.didPressOperator(at: 1)
+        viewModel.didPressOperand(at: 2)
+        viewModel.didPressOperator(at: 2)
+        viewModel.didPressOperator(at: 0)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+    
 }
