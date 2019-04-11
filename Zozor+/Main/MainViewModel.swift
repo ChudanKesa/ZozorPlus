@@ -68,6 +68,7 @@ final class MainViewModel {
     // MARK: - Properties
     
     enum NextScreen {
+        
         case alert(alertConfiguration: AlertConfiguration)
     }
     
@@ -85,11 +86,17 @@ final class MainViewModel {
     
     
     func didPressOperator(at index: Int) {
-        guard index < operators.count, canAddOperator else {
+        guard index < operators.count else {
             return
         }
         
         let currentOperator = operators[index]
+        
+        if currentOperator != .minus {
+            if !canAddOperator {
+                return
+            }
+        }
         
         if currentOperator == .equal {
             if wasTotalJustCalculated {
@@ -229,4 +236,10 @@ fileprivate extension AlertConfiguration {
         }
     }
 }
+
+
+
+
+
+
 
