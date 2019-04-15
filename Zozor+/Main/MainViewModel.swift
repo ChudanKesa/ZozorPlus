@@ -8,7 +8,13 @@
 
 import Foundation
 
-struct AlertConfiguration {
+struct AlertConfiguration: Equatable {
+    static func ==(lhs: AlertConfiguration, rhs: AlertConfiguration) -> Bool {
+        return lhs.actionTitle == rhs.actionTitle &&
+        lhs.message == rhs.message &&
+        lhs.title == rhs.title
+    }
+    
     let title: String
     let message: String
     let actionTitle: String
@@ -233,6 +239,15 @@ fileprivate extension AlertConfiguration {
             self.message = "Démarrez un nouveau calcul !"
         case .dividedByZero:
             self.message = "On ne peut pas diviser par zéro !"
+        }
+    }
+}
+
+extension MainViewModel.NextScreen: Equatable {
+    static func ==(lhs: MainViewModel.NextScreen, rhs: MainViewModel.NextScreen) -> Bool {
+        switch (lhs, rhs) {
+        case let (.alert(c1), .alert(c2)):
+            return c1 == c2
         }
     }
 }

@@ -227,31 +227,51 @@ final class MainViewModelTests: XCTestCase {
     }
     
     
-//    func testGivenAMainViewModel_WhenDidPressEqualWhenExpressionIsIncorrect_ThenAlertIsCalled() {
-//        let source = MainSource()
-//        let viewModel = MainViewModel(source: source)
-//        let expectation = self.expectation(description: "Alert type")
-//
-//        var counter = 0
-//        
-//        viewModel.navigateToScreen = { screen in
-//            if counter == 3 {
-//                switch screen {
-//                case .alert(alertConfiguration: let configuration) {
-//                    
-//                }
-//            }
-//            counter += 1
-//        }
-//        
-//        
-//        
-//        viewModel.viewDidLoad()
-//        viewModel.didPressOperand(at: 1)
-//        viewModel.didPressOperand(at: 2)
-//        
-//        waitForExpectations(timeout: 1.0, handler: nil)
-//    }
+    func testGivenAMainViewModel_WhenDidPressPlusWhenExpressionIsIncorrect_ThenAlertIsCalled() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Alert type")
+        let alertConfigurationWanted = AlertConfiguration(title: "Zéro!",
+                                             message: "Expression incorrecte !",
+                                             actionTitle: "OK")
+
+        
+        viewModel.navigateToScreen = { screen in
+            XCTAssertEqual(screen, MainViewModel.NextScreen.alert(alertConfiguration: alertConfigurationWanted))
+            expectation.fulfill()
+        }
+        
+        
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperator(at: 0)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
+    
+    func testGivenAMainViewModel_WhenDidPressEqualWhenExpressionIsIncorrect_ThenAlertIsCalled() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Alert type")
+        let alertConfigurationWanted = AlertConfiguration(title: "Zéro!",
+                                                          message: "Expression incorrecte !",
+                                                          actionTitle: "OK")
+        
+        
+        viewModel.navigateToScreen = { screen in
+            XCTAssertEqual(screen, MainViewModel.NextScreen.alert(alertConfiguration: alertConfigurationWanted))
+            expectation.fulfill()
+        }
+        
+        
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperand(at: 2)
+        viewModel.didPressOperator(at: 0)
+        viewModel.didPressOperator(at: 2)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
     
     
 }
