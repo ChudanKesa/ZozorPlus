@@ -8,18 +8,6 @@
 
 import Foundation
 
-struct AlertConfiguration: Equatable {
-    static func ==(lhs: AlertConfiguration, rhs: AlertConfiguration) -> Bool {
-        return lhs.actionTitle == rhs.actionTitle &&
-        lhs.message == rhs.message &&
-        lhs.title == rhs.title
-    }
-    
-    let title: String
-    let message: String
-    let actionTitle: String
-}
-
 final class MainViewModel {
     
     // MARK: - Private properties
@@ -28,9 +16,9 @@ final class MainViewModel {
     
     private let operands: [Operands]
     
-    private var _displayedText = Operands.zero.rawValue {
+    private var computedText = Operands.zero.rawValue {
         didSet {
-            displayedText?(_displayedText)
+            displayedText?(computedText)
         }
     }
     
@@ -42,6 +30,9 @@ final class MainViewModel {
     
     private var isExpressionCorrect: Bool {
         if let stringNumber = stringNumbers.last {
+            if operatorsUsedDuringCalcul.count == 1 {
+                presentAlert(for: .enterCorrectExpression)
+            }
             if stringNumber.isEmpty {
                 if stringNumbers.count == 1 {
                     presentAlert(for: .newCalcul)
@@ -74,13 +65,13 @@ final class MainViewModel {
     // MARK: - Properties
     
     enum NextScreen {
-        
         case alert(alertConfiguration: AlertConfiguration)
     }
     
     // MARK: - Outputs
     
     var displayedText: ((String) -> Void)?
+    
     var navigateToScreen: ((NextScreen) -> Void)?
     
     
@@ -89,7 +80,6 @@ final class MainViewModel {
     func viewDidLoad() {
         initTexts()
     }
-    
     
     func didPressOperator(at index: Int) {
         guard index < operators.count else {
@@ -106,7 +96,7 @@ final class MainViewModel {
         
         if currentOperator == .equal {
             if wasTotalJustCalculated {
-                calculateTotalBasedOnLastOperation()
+                repeatTheLastOperation()
                 return
             } else {
                 calculateTotal()
@@ -114,7 +104,7 @@ final class MainViewModel {
         } else {
             if wasTotalJustCalculated {
                 if let result = stringNumbers.last {
-                    _displayedText = result
+                    computedText = result
                 }
             }
             
@@ -141,8 +131,8 @@ final class MainViewModel {
     }
     
     func clear() {
-        _displayedText = Operands.zero.rawValue
-        clearTheReccordedOpperandsAndOpperators()
+        computedText = Operands.zero.rawValue
+        clearTheReccordedOpperandsAndOpperatorsAndLastUsed()
     }
     
     // MARK: - Helper
@@ -153,7 +143,7 @@ final class MainViewModel {
     }
     
     private func initTexts() {
-        displayedText?(_displayedText)
+        displayedText?(computedText)
     }
     
     private func calculateTotal() {
@@ -165,34 +155,40 @@ final class MainViewModel {
         lastOperatorUsedDuringCalcul = operatorsUsedDuringCalcul[operatorsUsedDuringCalcul.count-1]
         lastOperandUsedDuringCalcul = stringNumbers[stringNumbers.count-1]
         for (i, stringNumber) in stringNumbers.enumerated() {
+            let currentOperator = operatorsUsedDuringCalcul[i]
             if let number = Int(stringNumber) {
-                if operatorsUsedDuringCalcul[i] == .plus {
+                switch currentOperator {
+                case .plus:
                     total += number
-                } else if operatorsUsedDuringCalcul[i] == .minus {
+                case .minus:
                     total -= number
-                } else if operatorsUsedDuringCalcul[i] == .times {
+                case .times:
                     total *= number
-                } else if operatorsUsedDuringCalcul[i] == .divided {
+                case .divided:
                     if number != 0 {
                         total /= number
-                    } else {
-                        presentAlert(for: .dividedByZero)
-                        lastOperandUsedDuringCalcul = Operands.zero.rawValue
-                        lastOperatorUsedDuringCalcul = .plus
+                        } else {
+                            presentAlert(for: .dividedByZero)
+                            lastOperandUsedDuringCalcul = Operands.zero.rawValue
+                            lastOperatorUsedDuringCalcul = .plus
                     }
+                default:
+                    break
                 }
             }
         }
         
-        _displayedText =  "\(total)"
+        computedText =  "\(total)"
+        if operatorsUsedDuringCalcul.count > 1 { wasTotalJustCalculated = true }
         operatorsUsedDuringCalcul = [.plus]
         stringNumbers = [String(total)]
-        wasTotalJustCalculated = true
     }
     
-    private func calculateTotalBasedOnLastOperation() {
-        stringNumbers.append(lastOperandUsedDuringCalcul)
-        operatorsUsedDuringCalcul.append(lastOperatorUsedDuringCalcul)
+    private func repeatTheLastOperation() {
+        if lastOperandUsedDuringCalcul != "" {
+            stringNumbers.append(lastOperandUsedDuringCalcul)
+            operatorsUsedDuringCalcul.append(lastOperatorUsedDuringCalcul)
+        }
         calculateTotal()
     }
     
@@ -205,19 +201,20 @@ final class MainViewModel {
     }
     
     private func updateDisplayedText(with value: String) {
-        if _displayedText == Operands.zero.rawValue {
-            _displayedText = value
+        if computedText == Operands.zero.rawValue {
+            computedText = value
         } else {
-            _displayedText += value
+            computedText += value
         }
     }
     
-    private func clearTheReccordedOpperandsAndOpperators() {
+    private func clearTheReccordedOpperandsAndOpperatorsAndLastUsed() {
         operatorsUsedDuringCalcul = [.plus]
         stringNumbers = [""]
+        lastOperandUsedDuringCalcul = ""
+        lastOperatorUsedDuringCalcul = .plus
     }
 }
-
 
 fileprivate enum AlertType {
     case newCalcul
@@ -251,10 +248,3 @@ extension MainViewModel.NextScreen: Equatable {
         }
     }
 }
-
-
-
-
-
-
-

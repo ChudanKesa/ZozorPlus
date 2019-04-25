@@ -226,7 +226,6 @@ final class MainViewModelTests: XCTestCase {
         waitForExpectations(timeout: 1.0, handler: nil)
     }
     
-    
     func testGivenAMainViewModel_WhenDidPressPlusWhenExpressionIsIncorrect_ThenAlertIsCalled() {
         let source = MainSource()
         let viewModel = MainViewModel(source: source)
@@ -240,8 +239,6 @@ final class MainViewModelTests: XCTestCase {
             XCTAssertEqual(screen, MainViewModel.NextScreen.alert(alertConfiguration: alertConfigurationWanted))
             expectation.fulfill()
         }
-        
-        
         
         viewModel.viewDidLoad()
         viewModel.didPressOperator(at: 0)
@@ -257,13 +254,10 @@ final class MainViewModelTests: XCTestCase {
                                                           message: "Expression incorrecte !",
                                                           actionTitle: "OK")
         
-        
         viewModel.navigateToScreen = { screen in
             XCTAssertEqual(screen, MainViewModel.NextScreen.alert(alertConfiguration: alertConfigurationWanted))
             expectation.fulfill()
         }
-        
-        
         
         viewModel.viewDidLoad()
         viewModel.didPressOperand(at: 2)
@@ -273,5 +267,23 @@ final class MainViewModelTests: XCTestCase {
         waitForExpectations(timeout: 1.0, handler: nil)
     }
     
-    
+    func testGivenAMainViewModel_WhenDidPressEqualAfterOnlyAnOperand_ThenAlertIsCalled() {
+        let source = MainSource()
+        let viewModel = MainViewModel(source: source)
+        let expectation = self.expectation(description: "Alert type")
+        let alertConfigurationWanted = AlertConfiguration(title: "Zéro!",
+                                                          message: "Entrez une expression correcte !",
+                                                          actionTitle: "OK")
+        
+        viewModel.navigateToScreen = { screen in
+            XCTAssertEqual(screen, MainViewModel.NextScreen.alert(alertConfiguration: alertConfigurationWanted))
+            expectation.fulfill()
+        }
+        
+        viewModel.viewDidLoad()
+        viewModel.didPressOperand(at: 2)
+        viewModel.didPressOperator(at: 2)
+        
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
 }

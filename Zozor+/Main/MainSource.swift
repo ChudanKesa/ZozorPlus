@@ -10,8 +10,12 @@ import Foundation
 
 final class MainSource {
     
+    // MARK: Properties
+    
     let operators: [Operator]
     let operands: [Operands]
+    
+    // MARK: Initializer
     
     init() {
         operators = [

@@ -22,7 +22,6 @@ class MainViewController: UIViewController {
         return viewModel
     }()
     
-    
     // MARK: - View life cycle
     
     override func viewDidLoad() {
@@ -71,9 +70,4 @@ class MainViewController: UIViewController {
         alertViewController.addAction(action)
         self.present(alertViewController, animated: true, completion: nil)
     }
-    
-    
 }
-
-
-
